@@ -1,0 +1,36 @@
+<h2 mat-dialog-title class="dialog-title">
+  Add New Node
+</h2>
+
+<form [formGroup]="nodeForm" (ngSubmit)="onSubmit()" class="dialog-content">
+  <!-- Node Name Input -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Node Name</mat-label>
+    <input matInput formControlName="nodeName" placeholder="Enter node name" />
+    <mat-error *ngIf="nodeForm.get('nodeName')?.invalid && nodeForm.get('nodeName')?.touched">
+      Node name is required (Min: 3 characters).
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Node Selection Dropdown -->
+  <mat-form-field>
+    <mat-label>Select Nodes</mat-label>
+    <mat-select formControlName="selectedNode" multiple>
+      <mat-option *ngFor="let node of nodes" [value]="node.id">
+        {{ node.label }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- <div>Selected: {{ nodeForm.value.selectedNode | json }}</div> -->
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions">
+    <button mat-button color="primary" type="submit" [disabled]="nodeForm.invalid">
+      Add Node
+    </button>
+    <button mat-button color="warn" type="button" (click)="onCancel()">
+      Cancel
+    </button>
+  </div>
+</form>

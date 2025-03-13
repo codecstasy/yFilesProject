@@ -1,0 +1,15 @@
+<div>
+  <label>Select Layout: </label>
+  <select
+    [(ngModel)]="layoutAlgorithmString"
+    (ngModelChange)="onLayoutChange($event)"
+  >
+    <option value="HierarchicLayout" selected>Hierarchic Layout</option>
+    <option value="OrganicLayout">Organic Layout</option>
+    <option value="OrthogonalLayout">Orthogonal Layout</option>
+    <option value="CircularLayout">Circular Layout</option>
+    <option value="RadialLayout">Radial Layout</option>
+  </select>
+  <button (click)="openAddNodeDialog()">Add Node</button>
+</div>
+<div id="graphComponent"></div>

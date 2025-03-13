@@ -1,0 +1,59 @@
+::ng-deep .mat-dialog-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+  padding: 24px;
+  width: 400px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Title Styling */
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #d32f9f;
+}
+
+/* Warning Icon */
+.warning-icon {
+  font-size: 24px;
+  color: #d32f2f;
+}
+
+/* Content Styling */
+.dialog-content {
+  font-size: 16px;
+  color: #444;
+  margin: 15px 0;
+}
+
+/* Button Container */
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  color: #757575;
+}
+
+/* Confirm Button */
+.confirm-btn {
+  background-color: #d32f2f;
+  color: white;
+  border-radius: 5px;
+}
+.confirm-btn:hover {
+  background-color: #b71c1c;
+}
