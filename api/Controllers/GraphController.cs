@@ -11,10 +11,19 @@ public class GraphController(GraphDataService _graphDataService) : Controller
 {
     // Get Data
     [HttpGet]
-    public async Task<List<GraphData>> GetDataAsync()
+    public async Task<ActionResult<GraphData>> GetDataAsync([FromQuery] string graphId)
     {
-        var data = await _graphDataService.GetDataAsync();
-        return data;
+        if(string.IsNullOrEmpty(graphId))
+        {
+            return BadRequest(new { message = "Provide graph id!" });
+        }
+        var graph = await _graphDataService.GetDataAsync(graphId);
+        if(graph == null)
+        {
+            return NotFound(new { message = "Graph not found"});
+        }
+
+        return Ok(graph);
     }
 
     // Delete Selected Nodes

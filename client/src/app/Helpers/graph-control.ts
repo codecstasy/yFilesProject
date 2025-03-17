@@ -1,12 +1,12 @@
-import { ArrowEdgeStyle, Fill, GraphComponent, GraphEditorInputMode, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
+import { ArrowEdgeStyle, Fill, Graph, GraphComponent, GraphEditorInputMode, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, Rect, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
 import { GraphBuilder } from './graph-builder';
 import { GraphLayout } from './graph-layout';
-import { GraphData, Node } from '../models/graph-data';
+import { GraphData, Node, Ownership } from '../models/graph-data';
 import { EventEmitter } from '@angular/core';
 
 export class GraphControl {
 
-  constructor() { }
+  constructor() {}
 
   itemsDeleting = new EventEmitter<Node[]>();
   graphComponent !: GraphComponent;
@@ -88,6 +88,10 @@ export class GraphControl {
     this.doLayout(this.layoutAlgorithm)
   }
 
+  applyNewNode(newNodeName: string, selectedParentNodes: Ownership[]) {
+    GraphBuilder.applyNewNodeLive(this.graph, newNodeName, selectedParentNodes);
+  }
+
   clearSelectedItems() {
     const graphEditorInputMode = this.graphComponent.inputMode as GraphEditorInputMode;
     graphEditorInputMode.clearSelection();
@@ -96,11 +100,6 @@ export class GraphControl {
   deleteSelectedItems() {
     const graphEditorInputMode = this.graphComponent.inputMode as GraphEditorInputMode;
     graphEditorInputMode.deleteSelection();
-  }
-
-  applyNewNode(nodeName: string) {
-    const graph = this.graphComponent.graph;
-    GraphBuilder.applyNewNodeLive(graph, nodeName);
   }
 
   doLayout(layout: ILayoutAlgorithm) {

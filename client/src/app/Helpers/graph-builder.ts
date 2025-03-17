@@ -1,11 +1,13 @@
-import { IGraph, Rect } from 'yfiles';
-import { Edge, GraphData, Node } from '../models/graph-data';
+import { IGraph, INode, Rect } from 'yfiles';
+import { Edge, GraphData, Node, Ownership } from '../models/graph-data';
 
 export class GraphBuilder {
+  static nodesMap: Map<string, INode> = new Map<string, INode>();  // <node id, node>
 
   static buildGraph(graphData: GraphData, graph: IGraph): void {
+    this.nodesMap.clear();
 
-    const nodesMap = new Map<string, any>();
+    this.nodesMap = new Map<string, INode>();
 
     graphData.nodes.forEach((node: Node) => {
       const newNode = graph.createNode(new Rect(0, 0, 60, 60));
@@ -13,12 +15,12 @@ export class GraphBuilder {
       graph.addLabel(newNode, `<b>${node.label}</b>`);
 
       newNode.tag = node;
-      nodesMap.set(node.id, newNode);
+      this.nodesMap.set(node.id, newNode);
     });
 
     graphData.edges.forEach((edge: Edge) => {
-      const sourceNode = nodesMap.get(edge.sourceId);
-      const targetNode = nodesMap.get(edge.targetId);
+      const sourceNode = this.nodesMap.get(edge.sourceId);
+      const targetNode = this.nodesMap.get(edge.targetId);
 
       if (sourceNode && targetNode) {
         graph.createEdge(sourceNode, targetNode);
@@ -26,8 +28,15 @@ export class GraphBuilder {
     });
   }
 
-  static applyNewNodeLive(graph: IGraph, nodeName: string) {
-      const newNode = graph.createNode(new Rect(0, 0, 60, 60));
-      graph.addLabel(newNode, `<b>${nodeName}</b>`);
+  static applyNewNodeLive(graph: IGraph, nodeName: string, selectedParentNodes: any[]) {
+    const newNode = graph.createNode(new Rect(0, 0, 60, 60));
+    graph.addLabel(newNode, `<b>${nodeName}</b>`);
+
+    selectedParentNodes.forEach((parentId) => {
+      const sourceNode = this.nodesMap.get(parentId);
+      if (sourceNode) {
+        graph.createEdge(sourceNode, newNode);
+      }
+    });
   }
 }

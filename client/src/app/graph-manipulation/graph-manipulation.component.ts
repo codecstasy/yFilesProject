@@ -24,8 +24,9 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     private apiCallsService: ApiCallsService, private matDialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.graphControl = new GraphControl();
-    this.getGraphData()
+    const graphId = "67c4188a8b14961644089122";
+    this.graphControl = this.graphService.getGraphControl();
+    this.getGraphData(graphId)
       .subscribe(
         (graphData) => {
           if (graphData) {
@@ -50,8 +51,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     this.graphService.setLayoutAlgorithm(this.layoutAlgorithmString);
   }
 
-  getGraphData() {
-    return this.apiCallsService.getGraphData();
+  getGraphData(graphId: string) {
+    return this.apiCallsService.getGraphData(graphId);
   }
 
   openAddNodeDialog() {
@@ -79,7 +80,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     this.apiCallsService.addNewNode(nodeName, selectedParentNodes)
       .subscribe(
         (response) => {
-          this.graphControl.applyNewNode(nodeName)
+          this.graphService.applyNewNode(nodeName, selectedParentNodes);
         },
         (error) => {
           console.error(error);

@@ -1,5 +1,6 @@
 ﻿using api.Models;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Runtime;
 
@@ -16,9 +17,13 @@ public class GraphDataService
         dbContext = database.GetCollection<GraphData>(CollectionName);
     }
 
-    public async Task<List<GraphData>> GetDataAsync()
+    public async Task<GraphData?> GetDataAsync(string graphId)
     {
-        return await dbContext.Find(_ => true).ToListAsync();
+        if(!ObjectId.TryParse(graphId, out ObjectId objectId))
+        {
+            return null;
+        }
+        return await dbContext.Find(g => g.Id == graphId).FirstOrDefaultAsync();
     }
 
     public async Task<List<GraphData>> DeleteNodesAsync(List<string> itemIds)

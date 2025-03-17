@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { catchError, map, Observable, of, pipe, throwError } from 'rxjs';
 import { GraphData, Ownership } from '../models/graph-data';
 
 @Injectable({
@@ -11,10 +11,13 @@ export class ApiCallsService {
   constructor(private http: HttpClient) { }
 
   // API call for fetching the graph data
-  getGraphData(): Observable<GraphData | null> {
-    let data = this.http.get<GraphData[]>(this.baseUrl + '/graph')
+  getGraphData(graphId: string): Observable<GraphData | null> {
+    let data = this.http.get<GraphData>(`${this.baseUrl}/graph?graphId=${graphId}`)
     .pipe(
-      map(data => data.length > 0 ? data[0] : null)
+      catchError(error => {
+        console.error(error);
+        return of(null);
+      })
     );
     return data;
   }

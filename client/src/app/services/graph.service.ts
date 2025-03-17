@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { GraphControl } from '../Helpers/graph-control';
 import { CircularLayout, HierarchicLayout, OrganicLayout, OrthogonalLayout, RadialLayout } from 'yfiles';
 import { ApiCallsService } from './api-calls.service';
-import { GraphData, Node } from '../models/graph-data';
+import { GraphData, Node, Ownership } from '../models/graph-data';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDialogComponent } from '../mat-dialog/mat-dialog.component';
 
@@ -17,6 +17,14 @@ export class GraphService {
     this.graphControl.itemsDeleting.subscribe((items: Node[]) => {
       this.onDeletingSelectedItems(items);
     });
+  }
+
+  getGraphControl(): GraphControl {
+    return this.graphControl;
+  }
+
+  applyNewNode(nodeName: string, selectedParentNodes: Ownership[]): void {
+    this.graphControl.applyNewNode(nodeName, selectedParentNodes);
   }
 
   createGraph(graphData: GraphData, elementId: string) {
