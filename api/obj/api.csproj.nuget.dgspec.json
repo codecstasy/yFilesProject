@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Learning\\yFilesLearning\\api\\api.csproj": {}
+    "D:\\Learning\\Copy_Yfiles\\yFilesProject\\api\\api.csproj": {}
   },
   "projects": {
-    "D:\\Learning\\yFilesLearning\\api\\api.csproj": {
+    "D:\\Learning\\Copy_Yfiles\\yFilesProject\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Learning\\yFilesLearning\\api\\api.csproj",
+        "projectUniqueName": "D:\\Learning\\Copy_Yfiles\\yFilesProject\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "D:\\Learning\\yFilesLearning\\api\\api.csproj",
+        "projectPath": "D:\\Learning\\Copy_Yfiles\\yFilesProject\\api\\api.csproj",
         "packagesPath": "C:\\Users\\shattik\\.nuget\\packages\\",
-        "outputPath": "D:\\Learning\\yFilesLearning\\api\\obj\\",
+        "outputPath": "D:\\Learning\\Copy_Yfiles\\yFilesProject\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\shattik\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -14,7 +14,7 @@
 
   <!-- Node Selection Dropdown -->
   <mat-form-field>
-    <mat-label>Select Nodes</mat-label>
+    <mat-label>Select Parent Nodes</mat-label>
     <mat-select formControlName="selectedNode" multiple>
       <mat-option *ngFor="let node of nodes" [value]="node.id">
         {{ node.label }}
