@@ -5,32 +5,32 @@ Features
 All Layouts
 
 Displays all available graph layouts for visualization.
-![All Layouts](../Screenshots/AllLayouts.png)
+![All Layouts](Screenshots/AllLayouts.png)
 
 
 
 Circular Layout
 
 Arranges nodes in a circular manner, making relationships easier to observe.
-![Circular Layout](../Screenshots/CircularLayout.png)
+![Circular Layout](Screenshots/CircularLayout.png)
 
 
 Hierarchic Layout
 
 Structures nodes hierarchically, useful for tree-like data visualization.
-![Hierarchic Layout](../Screenshots/HierarchicLayout.png)
+![Hierarchic Layout](Screenshots/HierarchicLayout.png)
 
 
 Add Node With Parents
 
 Allows adding a node along with its parent nodes dynamically.
-![Add Node With Parents](../Screenshots/AddNodewithParents.png)
+![Add Node With Parents](Screenshots/AddNodewithParents.png)
 
 
 Delete Node
 
 Removes selected nodes from the graph.
-![Delete Node](../Screenshots/DeleteNodes.png)
+![Delete Node](Screenshots/DeleteNodes.png)
 
 
 How to Run
