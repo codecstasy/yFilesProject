@@ -16,7 +16,11 @@ export class GraphControl {
 
   cleanUp() {
     this.graphComponent.cleanUp();
+    this.graphComponent.inputMode = null;
+    this.graphComponent.graph.clear();
+    this.graphComponent = null as any;
     //remove listeners;
+    this.itemsDeleting.complete();
   }
 
   createGraph(graphData: GraphData, elementId: string): void {

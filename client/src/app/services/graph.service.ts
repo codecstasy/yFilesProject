@@ -4,7 +4,7 @@ import { CircularLayout, HierarchicLayout, OrganicLayout, OrthogonalLayout, Radi
 import { ApiCallsService } from './api-calls.service';
 import { GraphData, Node, Ownership } from '../models/graph-data';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatDialogComponent } from '../mat-dialog/mat-dialog.component';
+import { MatDialogComponent } from '../delete-nodes-dialog/delete-nodes-dialog.component';
 
 @Injectable({
   providedIn: 'root'
