@@ -28,8 +28,13 @@ public class GraphController(GraphDataService _graphDataService) : Controller
 
     // Delete Selected Nodes
     [HttpPost("delete")]
-    public async Task<IActionResult> DeleteNodesAsync([FromBody] List<string> itemIds)
+    public async Task<IActionResult> DeleteNodesAsync([FromQuery] string graphId, [FromBody] List<string> itemIds)
     {
+        if (string.IsNullOrEmpty(graphId))
+        {
+            return BadRequest(new { message = "Provide graph id!" });
+        }
+
         if (itemIds == null || itemIds.Count == 0)
         {
             return BadRequest("No item IDs provided.");
@@ -37,23 +42,28 @@ public class GraphController(GraphDataService _graphDataService) : Controller
 
         //Console.WriteLine($"Deleting nodes: {string.Join(",", itemIds)}");
 
-        await _graphDataService.DeleteNodesAsync(itemIds);
+        await _graphDataService.DeleteNodesAsync(graphId, itemIds);
 
         return Ok("Nodes deleted successfully.");
     }
 
     //Add new node
     [HttpPost("add")]
-    public async Task<IActionResult> AddNodeAsync([FromBody] AddNodeData nodeData)
+    public async Task<IActionResult> AddNodeAsync([FromQuery] string graphId, [FromBody] AddNodeData nodeData)
     {
         try
         {
+            if (string.IsNullOrEmpty(graphId))
+            {
+                return BadRequest(new { message = "Provide graph id!" });
+            }
+
             if (nodeData == null || string.IsNullOrWhiteSpace(nodeData.Label))
             {
                 return BadRequest(new { message = "Invalid Node Data" });
             }
 
-            await _graphDataService.AddNodeAsync(nodeData);
+            await _graphDataService.AddNodeAsync(graphId, nodeData);
 
             return Ok(new { message = "Node added successfully", nodeName = nodeData.Label });
         }

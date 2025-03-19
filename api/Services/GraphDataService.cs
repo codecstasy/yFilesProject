@@ -26,24 +26,30 @@ public class GraphDataService
         return await dbContext.Find(g => g.Id == graphId).FirstOrDefaultAsync();
     }
 
-    public async Task<List<GraphData>> DeleteNodesAsync(List<string> itemIds)
+    public async Task DeleteNodesAsync(string graphId, List<string> itemIds)
     {
+        if (!ObjectId.TryParse(graphId, out ObjectId objectId))
+        {
+            throw new Exception("Invalid graph id!");
+        }
+
         var nodeUpdate = Builders<GraphData>.Update.PullFilter(g => g.Nodes, n => itemIds.Contains(n.Id));
-        await dbContext.UpdateManyAsync(_ => true, nodeUpdate);
+        await dbContext.UpdateOneAsync(g => g.Id == graphId, nodeUpdate);
 
 
         var edgeUpdate = Builders<GraphData>.Update.PullFilter(g => g.Edges,
             e => itemIds.Contains(e.SourceId) || itemIds.Contains(e.TargetId));
-        await dbContext.UpdateManyAsync(_ => true, edgeUpdate);
-
-        // Return the updated graph data
-        return await dbContext.Find(_ => true).ToListAsync();
-
+        await dbContext.UpdateOneAsync(g => g.Id == graphId, edgeUpdate);
     }
 
-    public async Task<List<GraphData>> AddNodeAsync(AddNodeData nodeData)
+    public async Task AddNodeAsync(string graphId, AddNodeData nodeData)
     {
-        var graph = await dbContext.Find(_ => true).FirstOrDefaultAsync();
+        if (!ObjectId.TryParse(graphId, out ObjectId objectId))
+        {
+            throw new Exception("Invalid graph id!");
+        }
+
+        var graph = await dbContext.Find(g => g.Id == graphId).FirstOrDefaultAsync();
         
         if (graph == null)
         {
@@ -72,8 +78,6 @@ public class GraphDataService
             .Push(g => g.Nodes, newNode)
             .PushEach(g => g.Edges, newEdges);
 
-        await dbContext.UpdateOneAsync(_ => true, update);
-
-        return await dbContext.Find(_ => true).ToListAsync();
+        await dbContext.UpdateOneAsync(g => g.Id == graphId, update);
     }
 }

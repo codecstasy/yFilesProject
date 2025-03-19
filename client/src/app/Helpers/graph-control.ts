@@ -1,4 +1,4 @@
-import { ArrowEdgeStyle, Fill, Graph, GraphComponent, GraphEditorInputMode, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, Rect, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
+import { ArrowEdgeStyle, Fill, GraphComponent, GraphEditorInputMode, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
 import { GraphBuilder } from './graph-builder';
 import { GraphLayout } from './graph-layout';
 import { GraphData, Node, Ownership } from '../models/graph-data';
@@ -118,5 +118,9 @@ export class GraphControl {
       console.log('Error while applying layout');
       // error handling
     });
+  }
+
+  fitViewport() {
+    this.graphComponent.fitGraphBounds();
   }
 }

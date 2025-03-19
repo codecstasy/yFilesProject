@@ -7,6 +7,20 @@
   font-family: Arial, sans-serif;
 }
 
+
+/* Fit viewport button */
+#fitViewport {
+  background-color: #28a745;
+}
+
+#fitViewport:hover {
+  background-color: #218838;
+}
+
+#fitViewport:active {
+  background-color: #1e7e34;
+}
+
 /* Graph Component Styling */
 #graphComponent {
   width: 600px;

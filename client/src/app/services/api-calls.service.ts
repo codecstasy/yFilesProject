@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of, pipe, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { catchError, Observable, of } from 'rxjs';
 import { GraphData, Ownership } from '../models/graph-data';
 
 @Injectable({
@@ -23,12 +23,12 @@ export class ApiCallsService {
   }
 
   // API call for deleting the selected item(s)
-  deleteSelectedItems(ids: string[]): Observable<any> {
+  deleteSelectedItems(graphId: string, ids: string[]): Observable<any> {
     if (ids.length === 0) {
       return of(null);
     }
   
-    const url = `${this.baseUrl}/graph/delete`;
+    const url = `${this.baseUrl}/graph/delete?graphId=${graphId}`;
     const body = JSON.stringify(ids);
 
     return this.http.post(url, body, {
@@ -37,7 +37,7 @@ export class ApiCallsService {
   }
 
   // To add a New Node
-  addNewNode( nodeName: string, selectedParentNodes: Ownership[] = []): Observable<any> {
+  addNewNode(graphId: string, nodeName: string, selectedParentNodes: Ownership[] = []): Observable<any> {
     const requestBody = {
       label: nodeName,
       ownershipData: selectedParentNodes.map(fid => ({
@@ -45,7 +45,8 @@ export class ApiCallsService {
         Percentage: 0.0
       }))
     }
-    const url = `${this.baseUrl}/graph/add`;
+
+    const url = `${this.baseUrl}/graph/add?graphId=${graphId}`;
 
     return this.http.post(url, requestBody, {
       headers: {'Content-Type' : 'application/json'}
