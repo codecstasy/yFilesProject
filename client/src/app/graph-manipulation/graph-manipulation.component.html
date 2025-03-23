@@ -1,19 +1,19 @@
 <div>
   <label>Select Layout: </label>
-  <select
-    [(ngModel)]="layoutAlgorithmString"
-    (change)="forceLayoutChange()"
-  >
-    <option value="HierarchicLayout" selected>Hierarchic Layout</option>
-    <option value="OrganicLayout">Organic Layout</option>
-    <option value="OrthogonalLayout">Orthogonal Layout</option>
-    <option value="CircularLayout">Circular Layout</option>
-    <option value="RadialLayout">Radial Layout</option>
-  </select>
+  <button mat-button class="layout-button" [matMenuTriggerFor]="layoutMenu">
+    {{ getSelectedLayoutLabel() }} <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu #layoutMenu="matMenu">
+    <button
+      mat-menu-item
+      *ngFor="let option of layoutOptions"
+      (click)="selectLayout(option.value)"
+    >
+      {{ option.label }}
+      <mat-icon *ngIf="layoutAlgorithmString === option.value">check</mat-icon>
+    </button>
+  </mat-menu>
   <button (click)="openAddNodeDialog()">Add Node</button>
   <button id="fitViewport" (click)="fitViewport()">Fit Viewport</button>
 </div>
 <div id="graphComponent"></div>
-<div>
-  
-</div>

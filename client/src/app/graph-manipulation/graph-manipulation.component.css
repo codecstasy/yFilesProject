@@ -7,6 +7,41 @@
   font-family: Arial, sans-serif;
 }
 
+/* Material button styling for layout dropdown */
+.layout-button {
+  padding: 10px;
+  min-width: 200px; /* Increased width to accommodate layout names */
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #007BFF;
+  background-color: #e3f2fd;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  text-align: left;
+  justify-content: space-between;
+}
+
+.layout-button:hover {
+  background-color: #d1e9ff;
+}
+
+/* Style for the material menu panel */
+::ng-deep .mat-menu-panel {
+  min-width: 200px !important;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for menu items */
+::ng-deep .mat-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  height: 40px;
+}
 
 /* Fit viewport button */
 #fitViewport {
@@ -36,30 +71,8 @@
   justify-content: center;
 }
 
-/* Select Dropdown */
-select {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #007BFF;
-  background-color: #e3f2fd;
-  color: #333;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-select:hover {
-  background-color: #d1e9ff;
-}
-
-select:focus {
-  border-color: #0056b3;
-  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
-}
-
 /* Button Styling */
-button {
+button:not(.layout-button):not([mat-menu-item]) {
   padding: 10px 15px;
   font-size: 14px;
   font-weight: bold;
@@ -72,11 +85,11 @@ button {
   margin-left: 20px;
 }
 
-button:hover {
+button:not(.layout-button):not([mat-menu-item]):hover {
   background-color: #0056b3;
 }
 
-button:active {
+button:not(.layout-button):not([mat-menu-item]):active {
   background-color: #00408a;
 }
 
@@ -85,4 +98,9 @@ button:active {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Position the check icon properly in menu items */
+::ng-deep .mat-menu-item .mat-icon {
+  margin-left: 8px;
 }

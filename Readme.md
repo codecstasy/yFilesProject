@@ -25,6 +25,7 @@ Structures nodes hierarchically, useful for tree-like data visualization.
 
 Allows adding a node along with its parent nodes dynamically.
 ![Add Node With Parents](Screenshots/AddNodewithParents.png)
+![Add Node With Parents 2](Screenshots/AddNodewithParents2.png)
 
 
 **Delete Node**

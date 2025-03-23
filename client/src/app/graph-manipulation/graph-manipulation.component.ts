@@ -7,11 +7,21 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddNewNodeDialogComponent } from '../add-new-node-dialog/add-new-node-dialog.component';
 import { MatDialogComponent } from '../delete-nodes-dialog/delete-nodes-dialog.component';
 import { CircularLayout, HierarchicLayout, OrganicLayout, OrthogonalLayout, RadialLayout } from 'yfiles';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-graph-manipulation',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule, 
+    CommonModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './graph-manipulation.component.html',
   styleUrl: './graph-manipulation.component.css'
 })
@@ -21,6 +31,13 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   layoutAlgorithmString: string = 'HierarchicLayout';
   nodes: Node[] = [];
   graphId = "67c4188a8b14961644089122";
+  layoutOptions = [
+    { label: 'Hierarchic Layout', value: 'HierarchicLayout' },
+    { label: 'Organic Layout', value: 'OrganicLayout' },
+    { label: 'Orthogonal Layout', value: 'OrthogonalLayout' },
+    { label: 'Circular Layout', value: 'CircularLayout' },
+    { label: 'Radial Layout', value: 'RadialLayout' }
+  ]
 
   constructor(
     private apiCallsService: ApiCallsService,
@@ -94,6 +111,16 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   forceLayoutChange() {
     this.setLayoutAlgorithm(this.layoutAlgorithmString);
+  }
+
+  getSelectedLayoutLabel(): string {
+    const selectedOption = this.layoutOptions.find(option => option.value === this.layoutAlgorithmString);
+    return selectedOption ? selectedOption.label : 'Select Layout';
+  }
+
+  selectLayout(layoutValue: string) {
+    this.layoutAlgorithmString = layoutValue;
+    this.forceLayoutChange();
   }
 
   setLayoutAlgorithm(layoutType: string): void {
