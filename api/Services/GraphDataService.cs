@@ -80,4 +80,43 @@ public class GraphDataService
 
         await dbContext.UpdateOneAsync(g => g.Id == graphId, update);
     }
+
+    public async Task ResetGraphAsync(string graphId)
+    {
+        if(string.IsNullOrWhiteSpace(graphId))
+        {
+            throw new Exception("Graph ID cannot be empty.");
+        }
+
+        if (!ObjectId.TryParse(graphId, out ObjectId objectId))
+        {
+            throw new Exception("Invalid graph id format!");
+        }
+
+        var graph = await dbContext.Find(g => g.Id == graphId).FirstOrDefaultAsync();
+        var replacingGraph = await dbContext.Find(g => g.Id == "67c4188a8b14961644089123").FirstOrDefaultAsync();
+
+        if(graph == null)
+        {
+            throw new Exception("Cannot find the graph to be reset");
+        }
+
+        if(replacingGraph == null)
+        {
+            throw new Exception("Cannot find the replacing graph");
+        }
+
+        graph.Nodes.Clear();
+        graph.Edges.Clear();
+
+        graph.Nodes.AddRange(replacingGraph.Nodes);
+        graph.Edges.AddRange(replacingGraph.Edges);
+
+        var filter = Builders<GraphData>.Filter.Eq(g => g.Id, graphId);
+        var update = Builders<GraphData>.Update
+            .Set(g => g.Nodes, replacingGraph.Nodes)
+            .Set(g => g.Edges, replacingGraph.Edges);
+
+        await dbContext.UpdateOneAsync(filter, update);
+    }
 }

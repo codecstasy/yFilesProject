@@ -47,7 +47,7 @@ public class GraphController(GraphDataService _graphDataService) : Controller
         return Ok("Nodes deleted successfully.");
     }
 
-    //Add new node
+    // Add new node
     [HttpPost("add")]
     public async Task<IActionResult> AddNodeAsync([FromQuery] string graphId, [FromBody] AddNodeData nodeData)
     {
@@ -70,6 +70,27 @@ public class GraphController(GraphDataService _graphDataService) : Controller
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "An error occurred while adding node", error = ex.Message });
+        }
+    }
+
+    // Reset graph
+    [HttpGet("reset")]
+    public async Task<IActionResult> ResetGraphAsync([FromQuery] string graphId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(graphId))
+            {
+                return BadRequest(new { message = "Provide graph id!" });
+            }
+
+            await _graphDataService.ResetGraphAsync(graphId);
+
+            return Ok(new { message = "Graph has been reset successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while resetting the graph", error = ex.Message });
         }
     }
 

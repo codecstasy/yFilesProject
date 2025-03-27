@@ -104,3 +104,34 @@ button:not(.layout-button):not([mat-menu-item]):active {
 ::ng-deep .mat-menu-item .mat-icon {
   margin-left: 8px;
 }
+
+#resetGraph {
+  padding: 10px 15px; /* Match padding with other buttons */
+  font-size: 14px; /* Match font size */
+  font-weight: bold;
+  color: white;
+  background-color: #d9534f; /* Bright red for alarming effect */
+  border: none;
+  border-radius: 6px; /* Match other buttons' border-radius */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin-left: 20px;
+}
+
+#resetGraph:hover {
+  background-color: #c9302c;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.03); /* Reduce scale effect */
+}
+
+#resetGraph:active {
+  background-color: #ac2925;
+  transform: scale(1); 
+  box-shadow: none;
+}
+
+#resetGraph:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(217, 83, 79, 0.8);
+}

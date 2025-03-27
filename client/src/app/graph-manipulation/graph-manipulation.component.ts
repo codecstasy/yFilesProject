@@ -11,12 +11,13 @@ import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ResetConfirmationDialogComponent } from '../reset-confirmation-dialog/reset-confirmation-dialog.component';
 
 @Component({
   selector: 'app-graph-manipulation',
   standalone: true,
   imports: [
-    FormsModule, 
+    FormsModule,
     CommonModule,
     MatMenuModule,
     MatButtonModule,
@@ -37,7 +38,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     { label: 'Orthogonal Layout', value: 'OrthogonalLayout' },
     { label: 'Circular Layout', value: 'CircularLayout' },
     { label: 'Radial Layout', value: 'RadialLayout' }
-  ]
+  ];
 
   constructor(
     private apiCallsService: ApiCallsService,
@@ -45,6 +46,14 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.kickStart();
+  }
+
+  ngOnDestroy(): void {
+    this.graphControl.cleanUp();
+  }
+
+  kickStart(): void {
     this.graphControl = new GraphControl();
 
     this.graphControl.itemsDeleting.subscribe((items: Node[]) => {
@@ -68,8 +77,57 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       );
   }
 
+  resetGraph() {
+    this.openResetConfirmationDialog().afterClosed()
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.apiCallsService.resetGraph(this.graphId)
+            .subscribe({
+              next: () => {
+                if (this.graphControl) {
+                  this.graphControl.cleanUp();
+                }
+                this.kickStart();
+              },
+              error: () => console.error("Error resetting the graph")
+            });
+        }
+        else {}
+      })
+  }
+
+  openResetConfirmationDialog(): MatDialogRef<ResetConfirmationDialogComponent, boolean> {
+    const dialogConfig = {
+      width: '50%',
+      length: '20%',
+      disableClose: true,
+      backdropClass: 'no-click-backdrop',
+      position: {
+        left: '25%',
+      }
+    };
+    return this.matDialog.open(ResetConfirmationDialogComponent, dialogConfig);
+  }
+
+  openDeleteConfirmationDialog(): MatDialogRef<MatDialogComponent, boolean> {
+    const dialogConfig = {
+      width: '50%',
+      length: '20%',
+      disableClose: true,
+      backdropClass: 'no-click-backdrop',
+      position: {
+        left: '25%',
+      }
+    };
+    return this.matDialog.open(MatDialogComponent, dialogConfig);
+  }
+
   createGraph(graphData: GraphData, elementId: string) {
     this.graphControl.createGraph(graphData, elementId);
+  }
+
+  getGraphData(graphId: string) {
+    return this.apiCallsService.getGraphData(graphId);
   }
 
   onDeletingSelectedItems(items: Node[]): void {
@@ -87,26 +145,9 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
               error: (err) => console.error('Failed to delete selected items')
             });
         } else {
-
+          // Do nothing
         }
       })
-  }
-
-  openDeleteConfirmationDialog(): MatDialogRef<MatDialogComponent, boolean> {
-    const dialogConfig = {
-      width: '50%',
-      length: '20%',
-      disableClose: true,
-      backdropClass: 'no-click-backdrop',
-      position: {
-        left: '25%',
-      }
-    };
-    return this.matDialog.open(MatDialogComponent, dialogConfig);
-  }
-
-  ngOnDestroy(): void {
-    this.graphControl.cleanUp();
   }
 
   forceLayoutChange() {
@@ -143,10 +184,6 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       default:
         console.log('Unknown layout type:', layoutType);
     }
-  }
-
-  getGraphData(graphId: string) {
-    return this.apiCallsService.getGraphData(graphId);
   }
 
   openAddNodeDialog() {

@@ -1,4 +1,4 @@
-import { ArrowEdgeStyle, Fill, GraphComponent, GraphEditorInputMode, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
+import { ArrowEdgeStyle, Fill, GraphComponent, GraphEditorInputMode, GraphItemTypes, HierarchicLayout, HorizontalTextAlignment, IGraph, ILayoutAlgorithm, INode, InteriorLabelModel, Key, MarkupLabelStyle, ModifierKeys, NodeSizeConstraintProvider, ShapeNodeShape, ShapeNodeStyle, Size, Stroke, VerticalTextAlignment } from 'yfiles';
 import { GraphBuilder } from './graph-builder';
 import { GraphLayout } from './graph-layout';
 import { GraphData, Node, Ownership } from '../models/graph-data';
@@ -49,8 +49,8 @@ export class GraphControl {
             return graphData.nodes.find(n => n.id === nodeId);
           })
           .filter(node => node !== undefined) as Node[];
-
-        this.itemsDeleting.emit(selectedNodes);
+        if(selectedNodes.length != 0)
+          this.itemsDeleting.emit(selectedNodes);
         return true;
       }
     )
@@ -58,7 +58,7 @@ export class GraphControl {
     graphEditorInputMode.allowCreateEdge = false;
     graphEditorInputMode.allowCreateBend = false;
 
-    // graphEditorInputMode.deletableItems = GraphItemTypes.NONE;
+    graphEditorInputMode.deletableItems = GraphItemTypes.NODE;
     this.graphComponent.inputMode = graphEditorInputMode;
 
     this.graph.nodeDefaults.style = new ShapeNodeStyle({

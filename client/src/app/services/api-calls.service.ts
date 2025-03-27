@@ -52,4 +52,18 @@ export class ApiCallsService {
       headers: {'Content-Type' : 'application/json'}
     });
   }
+
+  resetGraph(graphId: string): Observable<any> {
+    const url = `${this.baseUrl}/graph/reset?graphId=${graphId}`;
+
+    let data = this.http.get(url)
+    .pipe(
+      catchError(error => {
+        console.error(error);
+        return of(null);
+      })
+    );
+
+    return data;
+  }
 }
