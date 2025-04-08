@@ -1,7 +1,6 @@
 ﻿using api.Models;
 using api.Services;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 
 namespace api.Controllers;
 

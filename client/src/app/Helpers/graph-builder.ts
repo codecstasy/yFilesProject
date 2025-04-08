@@ -28,7 +28,7 @@ export class GraphBuilder {
     });
   }
 
-  static applyNewNodeLive(graph: IGraph, nodeName: string, selectedParentNodes: any[]) {
+  static applyNewNode(graph: IGraph, nodeName: string, selectedParentNodes: any[]) {
     const newNode = graph.createNode(new Rect(0, 0, 60, 60));
     graph.addLabel(newNode, `<b>${nodeName}</b>`);
 

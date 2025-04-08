@@ -93,7 +93,7 @@ export class GraphControl {
   }
 
   applyNewNode(newNodeName: string, selectedParentNodes: Ownership[]) {
-    GraphBuilder.applyNewNodeLive(this.graph, newNodeName, selectedParentNodes);
+    GraphBuilder.applyNewNode(this.graph, newNodeName, selectedParentNodes);
   }
 
   clearSelectedItems() {

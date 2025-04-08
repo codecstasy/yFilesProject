@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<DatabaseSettings>(
     builder.Configuration.GetSection("yFilesLearningDatabase"));
 builder.Services.AddSingleton<GraphDataService>();
+builder.Services.AddSingleton<GraphContext>();
 
 // Define CORS policy name
 var corsPolicyName = "AllowAngularApp";
