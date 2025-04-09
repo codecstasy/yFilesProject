@@ -22,6 +22,7 @@ export interface Edge {
 
 export interface GraphData {
     id: string;
+    graphName: string;
     nodes: Node[];
     edges: Edge[];
 }

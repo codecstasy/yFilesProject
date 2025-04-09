@@ -12,6 +12,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ResetConfirmationDialogComponent } from '../reset-confirmation-dialog/reset-confirmation-dialog.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-graph-manipulation',
@@ -21,7 +24,9 @@ import { ResetConfirmationDialogComponent } from '../reset-confirmation-dialog/r
     CommonModule,
     MatMenuModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule,
+    MatFormFieldModule
   ],
   templateUrl: './graph-manipulation.component.html',
   styleUrl: './graph-manipulation.component.css'
@@ -32,6 +37,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   layoutAlgorithmString: string = 'HierarchicLayout';
   nodes: Node[] = [];
   graphId = "67c4188a8b14961644089122";
+  availableGraphs: { id: string, graphName: string }[] = [];
   layoutOptions = [
     { label: 'Hierarchic Layout', value: 'HierarchicLayout' },
     { label: 'Organic Layout', value: 'OrganicLayout' },
@@ -42,15 +48,55 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiCallsService: ApiCallsService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private  route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+    this.getGraphIdFromUrl();
+    this.loadAvailableGraphs();
     this.kickStart();
   }
 
   ngOnDestroy(): void {
     this.graphControl.cleanUp();
+  }
+
+  onGraphSelectionChange(newGraphId : string): void {
+    if (newGraphId !== this.graphId) {
+      this.graphId = newGraphId;
+      // console.log(this.graphId);
+
+      this.router.navigate([], {
+        queryParams: { graphId: newGraphId },
+      });
+
+      if(this.graphControl) {
+        this.graphControl.cleanUp();
+      }
+      this.kickStart();
+    }
+  }
+
+  loadAvailableGraphs(): void {
+    this.apiCallsService.getAllGraphs().subscribe({
+      next: (graphs) => {
+        this.availableGraphs = graphs;
+      },
+      error: (err) => {
+        console.error('Failed to load available graphs:', err);
+      }
+    });
+  }
+
+  getGraphIdFromUrl(): void {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramGraphId = urlParams.get('graphId');
+    if (paramGraphId) {
+      this.graphId = paramGraphId;
+    }
+    // console.log(this.graphId);
   }
 
   kickStart(): void {
@@ -157,6 +203,11 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   getSelectedLayoutLabel(): string {
     const selectedOption = this.layoutOptions.find(option => option.value === this.layoutAlgorithmString);
     return selectedOption ? selectedOption.label : 'Select Layout';
+  }
+
+  getSelectedGraphName(): string {
+    const selectedGraphName = this.availableGraphs.find(graph => graph.id === this.graphId);
+    return selectedGraphName ? selectedGraphName.graphName : 'Select Graph';
   }
 
   selectLayout(layoutValue: string) {

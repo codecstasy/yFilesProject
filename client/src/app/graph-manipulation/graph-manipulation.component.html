@@ -1,20 +1,39 @@
-<div>
-  <label>Select Layout: </label>
-  <button mat-button class="layout-button" [matMenuTriggerFor]="layoutMenu">
-    {{ getSelectedLayoutLabel() }} <mat-icon>arrow_drop_down</mat-icon>
-  </button>
-  <mat-menu #layoutMenu="matMenu">
-    <button
-      mat-menu-item
-      *ngFor="let option of layoutOptions"
-      (click)="selectLayout(option.value)"
-    >
-      {{ option.label }}
-      <mat-icon *ngIf="layoutAlgorithmString === option.value">check</mat-icon>
+<div class="controls-container">
+  <div class="layout-section">
+    <label>Select Layout: </label>
+    <button mat-button class="layout-button" [matMenuTriggerFor]="layoutMenu">
+      {{ getSelectedLayoutLabel() }} <mat-icon>arrow_drop_down</mat-icon>
     </button>
-  </mat-menu>
-  <button (click)="openAddNodeDialog()">Add Node</button>
-  <button id="fitViewport" (click)="fitViewport()">Fit Viewport</button>
-  <button id="resetGraph" (click)="resetGraph()">Reset</button>
+    <mat-menu #layoutMenu="matMenu">
+      <button
+        mat-menu-item
+        *ngFor="let option of layoutOptions"
+        (click)="selectLayout(option.value)"
+      >
+        {{ option.label }}
+        <mat-icon *ngIf="layoutAlgorithmString === option.value">check</mat-icon>
+      </button>
+    </mat-menu>
+    <button (click)="openAddNodeDialog()">Add Node</button>
+    <button id="fitViewport" (click)="fitViewport()">Fit Viewport</button>
+    <button id="resetGraph" (click)="resetGraph()">Reset</button>
+  </div>
+
+  <div class="graph-selection">
+    <label>Select Graph: </label>
+    <button mat-button class="layout-button" [matMenuTriggerFor]="graphMenu">
+      {{ getSelectedGraphName() }} <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #graphMenu="matMenu">
+      <button
+        mat-menu-item 
+        *ngFor="let graph of availableGraphs"
+        (click)="onGraphSelectionChange(graph.id)"
+      >
+      {{ graph.graphName }}
+      </button>
+    </mat-menu>
+  </div>
 </div>
+
 <div id="graphComponent"></div>

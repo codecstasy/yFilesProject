@@ -10,6 +10,10 @@ export class ApiCallsService {
   private baseUrl = 'http://localhost:5183/api';
   constructor(private http: HttpClient) { }
 
+  getAllGraphs(): Observable<{ id: string, graphName: string}[]> {
+    return this.http.get<{ id: string, graphName: string }[]>(`${this.baseUrl}/graph/getallgraphs`);
+  }
+
   // API call for fetching the graph data
   getGraphData(graphId: string): Observable<GraphData | null> {
     let data = this.http.get<GraphData>(`${this.baseUrl}/graph?graphId=${graphId}`)

@@ -8,6 +8,17 @@ namespace api.Controllers;
 [Route("api/[controller]")]
 public class GraphController(GraphDataService _graphDataService) : Controller
 {
+    // Get all graphs
+    [HttpGet("getallgraphs")]
+    public async Task<ActionResult<List<GraphData>>> GetAllGraphsAsync()
+    {
+        var graphs = await _graphDataService.GetAllGraphsAsync();
+        if (graphs == null)
+        {
+            return NotFound(new { message = "No graph found" });
+        }
+        return Ok(graphs);
+    }
     // Get Data
     [HttpGet]
     public async Task<ActionResult<GraphData>> GetDataAsync([FromQuery] string graphId)

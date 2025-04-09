@@ -61,7 +61,7 @@
   width: 600px;
   height: 600px;
   padding: 0;
-  margin: 80px auto;
+  margin: 20px auto;
   border: 2px solid #ddd;
   border-radius: 10px;
   background-color: #f9f9f9;
@@ -134,4 +134,52 @@ button:not(.layout-button):not([mat-menu-item]):active {
 #resetGraph:focus {
   outline: none;
   box-shadow: 0 0 10px rgba(217, 83, 79, 0.8);
+}
+
+/* Graph Name Styling */
+.graphName {
+  text-align: center;
+  margin-bottom: 5px; /* Less space below the graph name */
+  font-family: Arial, sans-serif;
+  font-size: 16px; /* Smaller font size */
+  font-weight: normal; /* Lighter weight */
+  color: #007BFF; /* Maintain the same color for consistency */
+  background-color: #f1f1f1; /* Light background */
+  padding: 5px 10px; /* Reduced padding */
+  border-radius: 4px; /* Slightly smaller rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 100%;
+  max-width: 400px; /* Reduced max width */
+  margin: 10px auto; /* Center align with less vertical space */
+  border: 1px solid #007BFF; /* Border color matching text */
+}
+
+.graphName p {
+  margin: 0; /* Remove default margin */
+  color: #333; /* Dark text for readability */
+  font-size: 0.9em; /* Slightly smaller text */
+  font-weight: normal; /* Lighter weight */
+}
+
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 0 20px;
+}
+
+.layout-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.graph-selection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto; /* This pushes the element to the right */
+  padding-right: 20px;
 }

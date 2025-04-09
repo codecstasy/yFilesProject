@@ -17,7 +17,13 @@ public class GraphContext
         dbContext = database.GetCollection<GraphData>(CollectionName);
     }
 
-    public async Task<GraphData?> GetGraphDataAsync(string graphId)
+    public async Task<List<GraphData>> GetAllGraphsAsync()
+    {
+        var filter = Builders<GraphData>.Filter.Eq(g => g.IsBackup, false);
+        return await dbContext.Find(filter).ToListAsync();
+    }
+
+    public async Task<GraphData?> GetDataAsync(string graphId)
     {
         if (!ObjectId.TryParse(graphId, out ObjectId objectId))
         {
@@ -41,7 +47,7 @@ public class GraphContext
         await dbContext.UpdateOneAsync(g => g.Id == graphId, edgeUpdate);
     }
 
-    public async Task AddNodeAsync(string graphId, AddNodeData nodeData)
+    public async Task AddNodeAsync(string graphId, Node newNode, List<Edge> newEdges)
     {
         if (!ObjectId.TryParse(graphId, out ObjectId objectId))
         {
@@ -54,24 +60,6 @@ public class GraphContext
         {
             throw new Exception("Graph data was not found in the database.");
         }
-
-        string newNodeId = Guid.NewGuid().ToString();
-
-        var newNode = new Node
-        {
-            Id = newNodeId,
-            Label = nodeData.Label,
-            Ownerships = nodeData.OwnershipData
-        };
-
-        var newEdges = nodeData.OwnershipData
-            .Select(ownership => new Edge
-            {
-                Id = Guid.NewGuid().ToString(),
-                SourceId = ownership.ParentId,
-                TargetId = newNodeId
-            })
-            .ToList();
 
         var update = Builders<GraphData>.Update
             .Push(g => g.Nodes, newNode)

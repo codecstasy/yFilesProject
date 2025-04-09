@@ -35,6 +35,8 @@ public class GraphData
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
+    public bool IsBackup { get; set; } = false;
+    public string GraphName { get; set; } = string.Empty;
     public required List<Node> Nodes { get; set; }
     public required List<Edge> Edges { get; set; }
 }
