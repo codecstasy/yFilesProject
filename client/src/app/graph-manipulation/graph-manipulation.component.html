@@ -17,12 +17,14 @@
     <button (click)="openAddNodeDialog()">Add Node</button>
     <button id="fitViewport" (click)="fitViewport()">Fit Viewport</button>
     <button id="resetGraph" (click)="resetGraph()">Reset</button>
+
+    <button id="createNewGraph" (click)="openCreateNewGraphDialog()">Create New Graph</button>
   </div>
 
   <div class="graph-selection">
     <label>Select Graph: </label>
     <button mat-button class="layout-button" [matMenuTriggerFor]="graphMenu">
-      {{ getSelectedGraphName() }} <mat-icon>arrow_drop_down</mat-icon>
+      {{ selectedGraphName }} <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #graphMenu="matMenu">
       <button

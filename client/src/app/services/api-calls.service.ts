@@ -10,6 +10,10 @@ export class ApiCallsService {
   private baseUrl = 'http://localhost:5183/api';
   constructor(private http: HttpClient) { }
 
+  createNewGraph(graphName: string): Observable<{ id: string }> {
+    return this.http.get<{ id: string }>(`${this.baseUrl}/graph/createnewgraph?graphName=${graphName}`);
+  }
+
   getAllGraphs(): Observable<{ id: string, graphName: string}[]> {
     return this.http.get<{ id: string, graphName: string }[]>(`${this.baseUrl}/graph/getallgraphs`);
   }
@@ -48,7 +52,7 @@ export class ApiCallsService {
         ParentId: fid,
         Percentage: 0.0
       }))
-    }
+    };
 
     const url = `${this.baseUrl}/graph/add?graphId=${graphId}`;
 

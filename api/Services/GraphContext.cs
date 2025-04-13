@@ -17,6 +17,11 @@ public class GraphContext
         dbContext = database.GetCollection<GraphData>(CollectionName);
     }
 
+    public async Task CreateNewGraphAsync(GraphData graph)
+    {
+        await dbContext.InsertOneAsync(graph);
+    }
+
     public async Task<List<GraphData>> GetAllGraphsAsync()
     {
         var filter = Builders<GraphData>.Filter.Eq(g => g.IsBackup, false);

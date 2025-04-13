@@ -8,6 +8,18 @@ namespace api.Controllers;
 [Route("api/[controller]")]
 public class GraphController(GraphDataService _graphDataService) : Controller
 {
+    // Create Graph
+    [HttpGet("createnewgraph")]
+    public async Task<IActionResult> CreateNewGraphAsync([FromQuery] string graphName)
+    {
+        if (string.IsNullOrEmpty(graphName))
+        {
+            return BadRequest(new { message = "Provide graph name!" });
+        }
+        var graph = await _graphDataService.CreateNewGraphAsync(graphName);
+        return Ok(graph);
+    }
+
     // Get all graphs
     [HttpGet("getallgraphs")]
     public async Task<ActionResult<List<GraphData>>> GetAllGraphsAsync()
@@ -19,6 +31,7 @@ public class GraphController(GraphDataService _graphDataService) : Controller
         }
         return Ok(graphs);
     }
+    
     // Get Data
     [HttpGet]
     public async Task<ActionResult<GraphData>> GetDataAsync([FromQuery] string graphId)
@@ -73,9 +86,9 @@ public class GraphController(GraphDataService _graphDataService) : Controller
                 return BadRequest(new { message = "Invalid Node Data" });
             }
 
-            await _graphDataService.AddNodeAsync(graphId, nodeData);
+            var newNode = await _graphDataService.AddNodeAsync(graphId, nodeData);
 
-            return Ok(new { message = "Node added successfully", nodeName = nodeData.Label });
+            return Ok(newNode);
         }
         catch (Exception ex)
         {

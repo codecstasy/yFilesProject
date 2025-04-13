@@ -15,6 +15,7 @@ import { ResetConfirmationDialogComponent } from '../reset-confirmation-dialog/r
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { CreateNewGraphDialogComponent } from '../create-new-graph-dialog/create-new-graph-dialog.component';
 
 @Component({
   selector: 'app-graph-manipulation',
@@ -45,6 +46,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     { label: 'Circular Layout', value: 'CircularLayout' },
     { label: 'Radial Layout', value: 'RadialLayout' }
   ];
+  selectedGraphName = "Graph Name";
 
   constructor(
     private apiCallsService: ApiCallsService,
@@ -61,6 +63,28 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.graphControl.cleanUp();
+  }
+
+  createNewGraph(graphName: string) {
+    this.apiCallsService.createNewGraph(graphName).subscribe({
+      next: (response) => {
+        const newGraphId = response.id;
+        this.loadAvailableGraphs();
+        this.router.navigate([], {
+          queryParams: { graphId: newGraphId },
+        });
+        this.getGraphIdFromUrl();
+  
+        if(this.graphControl) {
+          this.graphControl.cleanUp();
+        }
+        this.graphId = newGraphId;
+        this.kickStart();
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 
   onGraphSelectionChange(newGraphId : string): void {
@@ -112,6 +136,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
           if (graphData) {
             this.graphData = graphData;
             this.nodes = this.graphData.nodes;
+            this.setSelectedGraphName();
             this.createGraph(this.graphData, '#graphComponent');
           } else {
             console.error('Graph data is empty!');
@@ -140,6 +165,45 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
         }
         else {}
       })
+  }
+
+  openAddNodeDialog() {
+    const dialogConfig = {
+      width: '50%',
+      length: '20%',
+      disableClose: true,
+      backdropClass: 'no-click-backdrop',
+      position: { left: '25%' },
+      data: {
+        nodes: this.nodes
+      }
+    };
+
+    const dialogRef = this.matDialog.open(AddNewNodeDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.addNode(result.nodeName, result.selectedParentNodes)
+      }
+    });
+  }
+
+  openCreateNewGraphDialog() {
+    const dialogConfig = {
+      width: '50%',
+      length: '20%',
+      disableClose: true,
+      backdropClass: 'no-click-backdrop',
+      position: { left: '25%' }
+    };
+
+    const dialogRef = this.matDialog.open(CreateNewGraphDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.createNewGraph(result.graphName);
+      }
+    });
   }
 
   openResetConfirmationDialog(): MatDialogRef<ResetConfirmationDialogComponent, boolean> {
@@ -205,9 +269,11 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     return selectedOption ? selectedOption.label : 'Select Layout';
   }
 
-  getSelectedGraphName(): string {
+  setSelectedGraphName() {
     const selectedGraphName = this.availableGraphs.find(graph => graph.id === this.graphId);
-    return selectedGraphName ? selectedGraphName.graphName : 'Select Graph';
+    if(selectedGraphName) {
+      this.selectedGraphName = selectedGraphName.graphName;
+    }
   }
 
   selectLayout(layoutValue: string) {
@@ -237,32 +303,30 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     }
   }
 
-  openAddNodeDialog() {
-    const dialogConfig = {
-      width: '50%',
-      length: '20%',
-      disableClose: true,
-      backdropClass: 'no-click-backdrop',
-      position: { left: '25%' },
-      data: {
-        nodes: this.nodes
-      }
-    };
-
-    const dialogRef = this.matDialog.open(AddNewNodeDialogComponent, dialogConfig);
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addNode(result.nodeName, result.selectedParentNodes)
-      }
-    });
+  refreshGraphData() {
+    this.getGraphData(this.graphId)
+      .subscribe(
+        (graphData) => {
+          if (graphData) {
+            this.graphData = graphData;
+            this.nodes = this.graphData.nodes;
+          } else {
+            console.error('Graph data is empty!');
+          }
+        },
+        (error) => {
+          console.error('Error fetching graph data: ', error);
+        }
+      );
   }
 
   addNode(nodeName: string, selectedParentNodes: Ownership[] = []) {
     this.apiCallsService.addNewNode(this.graphId, nodeName, selectedParentNodes)
       .subscribe(
         (response) => {
-          this.applyNewNode(nodeName, selectedParentNodes);
+          this.refreshGraphData();
+          // console.log(response.id);
+          this.applyNewNode(nodeName, response.id, selectedParentNodes);
         },
         (error) => {
           console.error(error);
@@ -270,8 +334,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       );
   }
 
-  applyNewNode(nodeName: string, selectedParentNodes: Ownership[]): void {
-    this.graphControl.applyNewNode(nodeName, selectedParentNodes);
+  applyNewNode(nodeName: string, nodeId: string, selectedParentNodes: Ownership[]): void {
+    this.graphControl.applyNewNode(nodeName, nodeId, selectedParentNodes);
   }
 
   fitViewport() {

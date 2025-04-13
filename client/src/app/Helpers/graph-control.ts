@@ -92,8 +92,8 @@ export class GraphControl {
     this.doLayout(this.layoutAlgorithm)
   }
 
-  applyNewNode(newNodeName: string, selectedParentNodes: Ownership[]) {
-    GraphBuilder.applyNewNode(this.graph, newNodeName, selectedParentNodes);
+  applyNewNode(newNodeName: string, nodeId: string, selectedParentNodes: Ownership[]) {
+    GraphBuilder.applyNewNode(this.graph, newNodeName, nodeId, selectedParentNodes);
   }
 
   clearSelectedItems() {

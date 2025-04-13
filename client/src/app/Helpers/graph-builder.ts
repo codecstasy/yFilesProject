@@ -28,11 +28,13 @@ export class GraphBuilder {
     });
   }
 
-  static applyNewNode(graph: IGraph, nodeName: string, selectedParentNodes: any[]) {
+  static applyNewNode(graph: IGraph, nodeName: string, nodeId: string, selectedParentNodes: any[]) {
     const newNode = graph.createNode(new Rect(0, 0, 60, 60));
     graph.addLabel(newNode, `<b>${nodeName}</b>`);
 
-    selectedParentNodes.forEach((parentId) => {
+    this.nodesMap.set(nodeId, newNode);
+
+    selectedParentNodes.forEach(( parentId ) => {
       const sourceNode = this.nodesMap.get(parentId);
       if (sourceNode) {
         graph.createEdge(sourceNode, newNode);
