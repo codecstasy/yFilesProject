@@ -2,11 +2,15 @@
 
 **Features**
 
+**Full View**
+
+Displays the total visualization.
+![All Layouts](Screenshots/FullView.png)
+
 **All Layouts**
 
 Displays all available graph layouts for visualization.
 ![All Layouts](Screenshots/AllLayouts.png)
-
 
 
 **Circular Layout**
@@ -25,7 +29,6 @@ Structures nodes hierarchically, useful for tree-like data visualization.
 
 Allows adding a node along with its parent nodes dynamically.
 ![Add Node With Parents](Screenshots/AddNodewithParents.png)
-![Add Node With Parents 2](Screenshots/AddNodewithParents2.png)
 
 
 **Delete Node**
@@ -33,6 +36,20 @@ Allows adding a node along with its parent nodes dynamically.
 Removes selected nodes from the graph.
 ![Delete Node](Screenshots/DeleteNodes.png)
 
+**Reset Graph**
+
+Resets the graph to the backup version.
+![Delete Node](Screenshots/ResetGraph.png)
+
+**Create New Graph**
+
+Creates a new graph and navigates to it.
+![Delete Node](Screenshots/CreateNewGraph.png)
+
+**Select Graph**
+
+Dropdown menu to select the graph.
+![Delete Node](Screenshots/SelectGraph.png)
 
 ****How to Run****
 
