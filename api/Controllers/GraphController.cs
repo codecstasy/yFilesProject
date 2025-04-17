@@ -8,6 +8,21 @@ namespace api.Controllers;
 [Route("api/[controller]")]
 public class GraphController(GraphDataService _graphDataService) : Controller
 {
+    // Set Layout algorithm
+    [HttpGet("setlayoutalgorithm")]
+    public async Task<IActionResult> SetLayoutAlgorithmAsync([FromQuery] string layoutString, [FromQuery] string graphId)
+    {
+        if (string.IsNullOrEmpty(layoutString))
+        {
+            return BadRequest(new { message = "Provide layout string" });
+        }
+        if (string.IsNullOrEmpty(graphId))
+        {
+            return BadRequest(new { message = "Provide graph id!" });
+        }
+        await _graphDataService.SetLayoutAlgorithmAsync(layoutString, graphId);
+        return Ok();
+    }
     // Create Graph
     [HttpGet("createnewgraph")]
     public async Task<IActionResult> CreateNewGraphAsync([FromQuery] string graphName)

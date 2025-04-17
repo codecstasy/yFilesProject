@@ -37,7 +37,15 @@ public class GraphData
     public string? Id { get; set; }
     public bool IsBackup { get; set; } = false;
     public string GraphName { get; set; } = string.Empty;
+    public LayoutType Layout { get; set; } = LayoutType.HierarchicLayout;
     public required List<Node> Nodes { get; set; }
     public required List<Edge> Edges { get; set; }
 }
 
+public enum LayoutType {
+    HierarchicLayout = 0,
+    OrganicLayout = 1,
+    OrthogonalLayout = 2,
+    CircularLayout = 3,
+    RadialLayout = 4
+}

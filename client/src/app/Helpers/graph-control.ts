@@ -5,13 +5,13 @@ import { GraphData, Node, Ownership } from '../models/graph-data';
 import { EventEmitter } from '@angular/core';
 
 export class GraphControl {
+  layoutAlgorithmString !: string;
 
   constructor() {}
 
   itemsDeleting = new EventEmitter<Node[]>();
   graphComponent !: GraphComponent;
   graph !: IGraph;
-  layoutAlgorithm !: ILayoutAlgorithm;
   divElement !: string;
 
   cleanUp() {
@@ -31,7 +31,6 @@ export class GraphControl {
     }
 
     this.graphComponent = new GraphComponent(elementId);
-    this.layoutAlgorithm = new HierarchicLayout()
 
     // Initialize the graph
     this.graph = this.graphComponent.graph;
@@ -89,7 +88,7 @@ export class GraphControl {
     GraphBuilder.buildGraph(graphData, this.graph);
 
     // Layout graph
-    this.doLayout(this.layoutAlgorithm)
+    this.doLayout(graphData.layout);
   }
 
   applyNewNode(newNodeName: string, nodeId: string, selectedParentNodes: Ownership[]) {
@@ -106,17 +105,16 @@ export class GraphControl {
     graphEditorInputMode.deleteSelection();
   }
 
-  doLayout(layout: ILayoutAlgorithm) {
+  doLayout(layoutStringSerial: number) {
     if (!this.graphComponent) {
-      console.log('Provide a graph component first!')
-      return
+      console.log('Provide a graph component first!');
+      return;
     }
 
-    GraphLayout.applyLayout(this.graphComponent, layout).then(() => {
+    GraphLayout.applyLayout(this.graphComponent, layoutStringSerial).then(() => {
       this.graphComponent.fitGraphBounds();
     }).catch(() => {
       console.log('Error while applying layout');
-      // error handling
     });
   }
 

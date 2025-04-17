@@ -17,6 +17,18 @@ public class GraphContext
         dbContext = database.GetCollection<GraphData>(CollectionName);
     }
 
+    public async Task SetLayoutAlgorithmAsync(string layoutString, string graphId)
+    {
+        if (!Enum.TryParse<LayoutType>(layoutString, out var layout))
+            throw new ArgumentException("Invalid layout type", nameof(layoutString));
+
+        var filter = Builders<GraphData>.Filter.Eq(g => g.Id, graphId);
+        var update = Builders<GraphData>.Update.Set(g => g.Layout, layout);
+
+        await dbContext.UpdateOneAsync(filter, update);
+    }
+
+
     public async Task CreateNewGraphAsync(GraphData graph)
     {
         await dbContext.InsertOneAsync(graph);

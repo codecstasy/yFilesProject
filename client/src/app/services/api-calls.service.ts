@@ -10,6 +10,10 @@ export class ApiCallsService {
   private baseUrl = 'http://localhost:5183/api';
   constructor(private http: HttpClient) { }
 
+  setLayoutAlgorithm(layoutString: string, graphId: string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/graph/setlayoutalgorithm?layoutString=${layoutString}&graphId=${graphId}`);
+  }
+
   createNewGraph(graphName: string): Observable<{ id: string }> {
     return this.http.get<{ id: string }>(`${this.baseUrl}/graph/createnewgraph?graphName=${graphName}`);
   }

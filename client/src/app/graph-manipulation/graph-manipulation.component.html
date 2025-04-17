@@ -2,7 +2,7 @@
   <div class="layout-section">
     <label>Select Layout: </label>
     <button mat-button class="layout-button" [matMenuTriggerFor]="layoutMenu">
-      {{ getSelectedLayoutLabel() }} <mat-icon>arrow_drop_down</mat-icon>
+      {{ layoutAlgorithmString }} <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #layoutMenu="matMenu">
       <button

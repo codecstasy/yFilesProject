@@ -6,7 +6,6 @@ import { GraphControl } from '../Helpers/graph-control';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddNewNodeDialogComponent } from '../add-new-node-dialog/add-new-node-dialog.component';
 import { MatDialogComponent } from '../delete-nodes-dialog/delete-nodes-dialog.component';
-import { CircularLayout, HierarchicLayout, OrganicLayout, OrthogonalLayout, RadialLayout } from 'yfiles';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { CreateNewGraphDialogComponent } from '../create-new-graph-dialog/create-new-graph-dialog.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-graph-manipulation',
@@ -35,8 +35,8 @@ import { CreateNewGraphDialogComponent } from '../create-new-graph-dialog/create
 export class GraphManipulationComponent implements OnInit, OnDestroy {
   graphControl !: GraphControl;
   graphData !: GraphData;
-  layoutAlgorithmString: string = 'HierarchicLayout';
-  nodes: Node[] = [];
+  layoutAlgorithmStringSerial !: number;
+  layoutAlgorithmString !: string;
   graphId = "67c4188a8b14961644089122";
   availableGraphs: { id: string, graphName: string }[] = [];
   layoutOptions = [
@@ -48,10 +48,18 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   ];
   selectedGraphName = "Graph Name";
 
+  itemsDeletingSubscription !: Subscription;
+  getGraphDataSubscription !: Subscription;
+  openResetConfirmationDialogSubscription !: Subscription;
+  openAddNodeDialogSubscription !: Subscription;
+  openCreateNewGraphDialogSubscription !: Subscription;
+  openDeleteConfirmationDialogSubscription !: Subscription;
+
+
   constructor(
     private apiCallsService: ApiCallsService,
     private matDialog: MatDialog,
-    private  route: ActivatedRoute,
+    private route: ActivatedRoute,
     private router: Router
   ) { }
 
@@ -63,6 +71,12 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.graphControl.cleanUp();
+    
+    this.getGraphDataSubscription.unsubscribe();
+    this.openResetConfirmationDialogSubscription.unsubscribe();
+    this.openAddNodeDialogSubscription.unsubscribe();
+    this.openCreateNewGraphDialogSubscription.unsubscribe();
+    this.openDeleteConfirmationDialogSubscription.unsubscribe();
   }
 
   createNewGraph(graphName: string) {
@@ -74,8 +88,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
           queryParams: { graphId: newGraphId },
         });
         this.getGraphIdFromUrl();
-  
-        if(this.graphControl) {
+
+        if (this.graphControl) {
           this.graphControl.cleanUp();
         }
         this.graphId = newGraphId;
@@ -87,16 +101,15 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     });
   }
 
-  onGraphSelectionChange(newGraphId : string): void {
+  onGraphSelectionChange(newGraphId: string): void {
     if (newGraphId !== this.graphId) {
       this.graphId = newGraphId;
-      // console.log(this.graphId);
 
       this.router.navigate([], {
         queryParams: { graphId: newGraphId },
       });
 
-      if(this.graphControl) {
+      if (this.graphControl) {
         this.graphControl.cleanUp();
       }
       this.kickStart();
@@ -120,23 +133,53 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     if (paramGraphId) {
       this.graphId = paramGraphId;
     }
-    // console.log(this.graphId);
+  }
+
+  getLayoutAlgorithmString(layoutAlgorithmStringSerial: number): string {
+    if (layoutAlgorithmStringSerial == 0)
+      return 'HierarchicLayout';
+    else if (layoutAlgorithmStringSerial == 1)
+      return 'OrganicLayout';
+    else if (layoutAlgorithmStringSerial == 2)
+      return 'OrthogonalLayout';
+    else if (layoutAlgorithmStringSerial == 3)
+      return 'CircularLayout';
+    else if (layoutAlgorithmStringSerial == 4)
+      return 'RadialLayout';
+    else
+      return 'InvalidLayout';
+  }
+
+  getLayoutAlgorithmSerial(layoutAlgorithmString: string) {
+    if(layoutAlgorithmString == 'HierarchicLayout')
+      return 0;
+    else if(layoutAlgorithmString == 'OrganicLayout')
+      return 1;
+    else if(layoutAlgorithmString == 'OrthogonalLayout')
+      return 2;
+    else if(layoutAlgorithmString == 'CircularLayout')
+      return 3;
+    else if(layoutAlgorithmString == 'RadialLayout')
+      return 4;
+    else
+      return 100;
   }
 
   kickStart(): void {
     this.graphControl = new GraphControl();
 
-    this.graphControl.itemsDeleting.subscribe((items: Node[]) => {
+    this.itemsDeletingSubscription = this.graphControl.itemsDeleting.subscribe((items: Node[]) => {
       this.onDeletingSelectedItems(items);
     });
 
-    this.getGraphData(this.graphId)
+    this.getGraphDataSubscription = this.getGraphData(this.graphId)
       .subscribe(
         (graphData) => {
           if (graphData) {
             this.graphData = graphData;
-            this.nodes = this.graphData.nodes;
-            this.setSelectedGraphName();
+            this.layoutAlgorithmStringSerial = graphData.layout;
+            this.selectedGraphName = graphData.graphName;
+            this.layoutAlgorithmString = this.getLayoutAlgorithmString(this.layoutAlgorithmStringSerial);
             this.createGraph(this.graphData, '#graphComponent');
           } else {
             console.error('Graph data is empty!');
@@ -149,7 +192,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   resetGraph() {
-    this.openResetConfirmationDialog().afterClosed()
+    this.openResetConfirmationDialogSubscription = this.openResetConfirmationDialog().afterClosed()
       .subscribe(confirmed => {
         if (confirmed) {
           this.apiCallsService.resetGraph(this.graphId)
@@ -163,7 +206,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
               error: () => console.error("Error resetting the graph")
             });
         }
-        else {}
+        else { }
       })
   }
 
@@ -175,13 +218,13 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       backdropClass: 'no-click-backdrop',
       position: { left: '25%' },
       data: {
-        nodes: this.nodes
+        nodes: this.graphData.nodes
       }
     };
 
     const dialogRef = this.matDialog.open(AddNewNodeDialogComponent, dialogConfig);
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.openAddNodeDialogSubscription = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.addNode(result.nodeName, result.selectedParentNodes)
       }
@@ -199,7 +242,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.matDialog.open(CreateNewGraphDialogComponent, dialogConfig);
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.openCreateNewGraphDialogSubscription = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.createNewGraph(result.graphName);
       }
@@ -241,7 +284,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   onDeletingSelectedItems(items: Node[]): void {
-    this.openDeleteConfirmationDialog().afterClosed()
+    this.openDeleteConfirmationDialogSubscription = this.openDeleteConfirmationDialog().afterClosed()
       .subscribe(confirmed => {
         if (confirmed) {
           this.graphControl.deleteSelectedItems();
@@ -260,72 +303,28 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       })
   }
 
-  forceLayoutChange() {
-    this.setLayoutAlgorithm(this.layoutAlgorithmString);
-  }
-
-  getSelectedLayoutLabel(): string {
-    const selectedOption = this.layoutOptions.find(option => option.value === this.layoutAlgorithmString);
-    return selectedOption ? selectedOption.label : 'Select Layout';
-  }
-
-  setSelectedGraphName() {
-    const selectedGraphName = this.availableGraphs.find(graph => graph.id === this.graphId);
-    if(selectedGraphName) {
-      this.selectedGraphName = selectedGraphName.graphName;
-    }
-  }
-
   selectLayout(layoutValue: string) {
     this.layoutAlgorithmString = layoutValue;
-    this.forceLayoutChange();
-  }
-
-  setLayoutAlgorithm(layoutType: string): void {
-    switch (layoutType) {
-      case 'HierarchicLayout':
-        this.graphControl.doLayout(new HierarchicLayout())
-        break;
-      case 'OrganicLayout':
-        this.graphControl.doLayout(new OrganicLayout())
-        break;
-      case 'OrthogonalLayout':
-        this.graphControl.doLayout(new OrthogonalLayout())
-        break;
-      case 'CircularLayout':
-        this.graphControl.doLayout(new CircularLayout())
-        break;
-      case 'RadialLayout':
-        this.graphControl.doLayout(new RadialLayout())
-        break;
-      default:
-        console.log('Unknown layout type:', layoutType);
-    }
-  }
-
-  refreshGraphData() {
-    this.getGraphData(this.graphId)
-      .subscribe(
-        (graphData) => {
-          if (graphData) {
-            this.graphData = graphData;
-            this.nodes = this.graphData.nodes;
-          } else {
-            console.error('Graph data is empty!');
-          }
-        },
-        (error) => {
-          console.error('Error fetching graph data: ', error);
+    this.layoutAlgorithmStringSerial = this.getLayoutAlgorithmSerial(this.layoutAlgorithmString);
+    this.setLayoutAlgorithm(this.layoutAlgorithmStringSerial);
+    this.apiCallsService.setLayoutAlgorithm(this.layoutAlgorithmString, this.graphId)
+      .subscribe({
+        next: () => {},
+        error: (error) => {
+          console.log("Error setting layout algorithm", error);
         }
-      );
+      });
+  }
+
+  setLayoutAlgorithm(layoutAlgorithmStringSerial: number): void {
+    this.graphControl.doLayout(layoutAlgorithmStringSerial);
   }
 
   addNode(nodeName: string, selectedParentNodes: Ownership[] = []) {
     this.apiCallsService.addNewNode(this.graphId, nodeName, selectedParentNodes)
       .subscribe(
         (response) => {
-          this.refreshGraphData();
-          // console.log(response.id);
+          this.graphData.nodes.push(response);
           this.applyNewNode(nodeName, response.id, selectedParentNodes);
         },
         (error) => {
