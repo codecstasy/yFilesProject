@@ -15,7 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { CreateNewGraphDialogComponent } from '../create-new-graph-dialog/create-new-graph-dialog.component';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-graph-manipulation',
@@ -33,28 +33,15 @@ import { Subscription } from 'rxjs';
   styleUrl: './graph-manipulation.component.css'
 })
 export class GraphManipulationComponent implements OnInit, OnDestroy {
+  private destroySubscription$ = new Subject<void>();
+
   graphControl !: GraphControl;
   graphData !: GraphData;
   layoutAlgorithmStringSerial !: number;
-  layoutAlgorithmString !: string;
   graphId = "67c4188a8b14961644089122";
   availableGraphs: { id: string, graphName: string }[] = [];
-  layoutOptions = [
-    { label: 'Hierarchic Layout', value: 'HierarchicLayout' },
-    { label: 'Organic Layout', value: 'OrganicLayout' },
-    { label: 'Orthogonal Layout', value: 'OrthogonalLayout' },
-    { label: 'Circular Layout', value: 'CircularLayout' },
-    { label: 'Radial Layout', value: 'RadialLayout' }
-  ];
+  layoutOptions = ['Hierarchic Layout', 'Organic Layout', 'Orthogonal Layout', 'Circular Layout', 'Radial Layout'];
   selectedGraphName = "Graph Name";
-
-  itemsDeletingSubscription !: Subscription;
-  getGraphDataSubscription !: Subscription;
-  openResetConfirmationDialogSubscription !: Subscription;
-  openAddNodeDialogSubscription !: Subscription;
-  openCreateNewGraphDialogSubscription !: Subscription;
-  openDeleteConfirmationDialogSubscription !: Subscription;
-
 
   constructor(
     private apiCallsService: ApiCallsService,
@@ -71,12 +58,9 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.graphControl.cleanUp();
-    
-    this.getGraphDataSubscription.unsubscribe();
-    this.openResetConfirmationDialogSubscription.unsubscribe();
-    this.openAddNodeDialogSubscription.unsubscribe();
-    this.openCreateNewGraphDialogSubscription.unsubscribe();
-    this.openDeleteConfirmationDialogSubscription.unsubscribe();
+
+    this.destroySubscription$.next();
+    this.destroySubscription$.complete();
   }
 
   createNewGraph(graphName: string) {
@@ -135,51 +119,23 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
     }
   }
 
-  getLayoutAlgorithmString(layoutAlgorithmStringSerial: number): string {
-    if (layoutAlgorithmStringSerial == 0)
-      return 'HierarchicLayout';
-    else if (layoutAlgorithmStringSerial == 1)
-      return 'OrganicLayout';
-    else if (layoutAlgorithmStringSerial == 2)
-      return 'OrthogonalLayout';
-    else if (layoutAlgorithmStringSerial == 3)
-      return 'CircularLayout';
-    else if (layoutAlgorithmStringSerial == 4)
-      return 'RadialLayout';
-    else
-      return 'InvalidLayout';
-  }
-
-  getLayoutAlgorithmSerial(layoutAlgorithmString: string) {
-    if(layoutAlgorithmString == 'HierarchicLayout')
-      return 0;
-    else if(layoutAlgorithmString == 'OrganicLayout')
-      return 1;
-    else if(layoutAlgorithmString == 'OrthogonalLayout')
-      return 2;
-    else if(layoutAlgorithmString == 'CircularLayout')
-      return 3;
-    else if(layoutAlgorithmString == 'RadialLayout')
-      return 4;
-    else
-      return 100;
-  }
-
   kickStart(): void {
     this.graphControl = new GraphControl();
 
-    this.itemsDeletingSubscription = this.graphControl.itemsDeleting.subscribe((items: Node[]) => {
-      this.onDeletingSelectedItems(items);
-    });
+    this.graphControl.itemsDeleting
+      .pipe(takeUntil(this.destroySubscription$))
+      .subscribe((items: Node[]) => {
+        this.onDeletingSelectedItems(items);
+      });
 
-    this.getGraphDataSubscription = this.getGraphData(this.graphId)
+    this.getGraphData(this.graphId)
+      .pipe(takeUntil(this.destroySubscription$))
       .subscribe(
         (graphData) => {
           if (graphData) {
             this.graphData = graphData;
             this.layoutAlgorithmStringSerial = graphData.layout;
             this.selectedGraphName = graphData.graphName;
-            this.layoutAlgorithmString = this.getLayoutAlgorithmString(this.layoutAlgorithmStringSerial);
             this.createGraph(this.graphData, '#graphComponent');
           } else {
             console.error('Graph data is empty!');
@@ -192,7 +148,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   resetGraph() {
-    this.openResetConfirmationDialogSubscription = this.openResetConfirmationDialog().afterClosed()
+    this.openResetConfirmationDialog().afterClosed()
+      .pipe(takeUntil(this.destroySubscription$))
       .subscribe(confirmed => {
         if (confirmed) {
           this.apiCallsService.resetGraph(this.graphId)
@@ -224,11 +181,13 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.matDialog.open(AddNewNodeDialogComponent, dialogConfig);
 
-    this.openAddNodeDialogSubscription = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addNode(result.nodeName, result.selectedParentNodes)
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroySubscription$))
+      .subscribe(result => {
+        if (result) {
+          this.addNode(result.nodeName, result.selectedParentNodes)
+        }
+      });
   }
 
   openCreateNewGraphDialog() {
@@ -242,11 +201,13 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.matDialog.open(CreateNewGraphDialogComponent, dialogConfig);
 
-    this.openCreateNewGraphDialogSubscription = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.createNewGraph(result.graphName);
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroySubscription$))
+      .subscribe(result => {
+        if (result) {
+          this.createNewGraph(result.graphName);
+        }
+      });
   }
 
   openResetConfirmationDialog(): MatDialogRef<ResetConfirmationDialogComponent, boolean> {
@@ -284,7 +245,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   onDeletingSelectedItems(items: Node[]): void {
-    this.openDeleteConfirmationDialogSubscription = this.openDeleteConfirmationDialog().afterClosed()
+    this.openDeleteConfirmationDialog().afterClosed()
+      .pipe(takeUntil(this.destroySubscription$))
       .subscribe(confirmed => {
         if (confirmed) {
           this.graphControl.deleteSelectedItems();
@@ -304,12 +266,11 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   selectLayout(layoutValue: string) {
-    this.layoutAlgorithmString = layoutValue;
-    this.layoutAlgorithmStringSerial = this.getLayoutAlgorithmSerial(this.layoutAlgorithmString);
+    this.layoutAlgorithmStringSerial = this.layoutOptions.indexOf(layoutValue);
     this.setLayoutAlgorithm(this.layoutAlgorithmStringSerial);
-    this.apiCallsService.setLayoutAlgorithm(this.layoutAlgorithmString, this.graphId)
+    this.apiCallsService.setLayoutAlgorithm(this.layoutAlgorithmStringSerial, this.graphId)
       .subscribe({
-        next: () => {},
+        next: () => { },
         error: (error) => {
           console.log("Error setting layout algorithm", error);
         }

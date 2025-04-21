@@ -10,17 +10,13 @@ public class GraphController(GraphDataService _graphDataService) : Controller
 {
     // Set Layout algorithm
     [HttpGet("setlayoutalgorithm")]
-    public async Task<IActionResult> SetLayoutAlgorithmAsync([FromQuery] string layoutString, [FromQuery] string graphId)
+    public async Task<IActionResult> SetLayoutAlgorithmAsync([FromQuery] int layoutAlgorithmStringSerial, [FromQuery] string graphId)
     {
-        if (string.IsNullOrEmpty(layoutString))
-        {
-            return BadRequest(new { message = "Provide layout string" });
-        }
         if (string.IsNullOrEmpty(graphId))
         {
             return BadRequest(new { message = "Provide graph id!" });
         }
-        await _graphDataService.SetLayoutAlgorithmAsync(layoutString, graphId);
+        await _graphDataService.SetLayoutAlgorithmAsync(layoutAlgorithmStringSerial, graphId);
         return Ok();
     }
     // Create Graph

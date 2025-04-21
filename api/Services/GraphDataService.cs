@@ -12,9 +12,9 @@ public class GraphDataService
         _graphContext = graphContext;
     }
 
-    public async Task SetLayoutAlgorithmAsync(string layoutString, string graphId)
+    public async Task SetLayoutAlgorithmAsync(int layoutAlgorithmStringSerial, string graphId)
     {
-        await _graphContext.SetLayoutAlgorithmAsync(layoutString, graphId);
+        await _graphContext.SetLayoutAlgorithmAsync(layoutAlgorithmStringSerial, graphId);
     }
 
     public async Task <GraphData> CreateNewGraphAsync(string graphName)

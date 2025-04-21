@@ -17,14 +17,14 @@ public class GraphContext
         dbContext = database.GetCollection<GraphData>(CollectionName);
     }
 
-    public async Task SetLayoutAlgorithmAsync(string layoutString, string graphId)
+    public async Task SetLayoutAlgorithmAsync(int layoutAlgorithmStringSerial, string graphId)
     {
-        if (!Enum.TryParse<LayoutType>(layoutString, out var layout))
-            throw new ArgumentException("Invalid layout type", nameof(layoutString));
+        if (!Enum.IsDefined(typeof(LayoutType), layoutAlgorithmStringSerial))
+            throw new ArgumentException("Invalid layout type", nameof(layoutAlgorithmStringSerial));
 
+        var layout = (LayoutType)layoutAlgorithmStringSerial;
         var filter = Builders<GraphData>.Filter.Eq(g => g.Id, graphId);
         var update = Builders<GraphData>.Update.Set(g => g.Layout, layout);
-
         await dbContext.UpdateOneAsync(filter, update);
     }
 
