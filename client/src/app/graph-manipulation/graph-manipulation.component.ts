@@ -37,7 +37,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
 
   graphControl !: GraphControl;
   graphData !: GraphData;
-  layoutAlgorithmStringSerial !: number;
+  layoutSerial !: number;
   graphId = "67c4188a8b14961644089122";
   availableGraphs: { id: string, graphName: string }[] = [];
   layoutOptions = ['Hierarchic Layout', 'Organic Layout', 'Orthogonal Layout', 'Circular Layout', 'Radial Layout'];
@@ -134,7 +134,7 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
         (graphData) => {
           if (graphData) {
             this.graphData = graphData;
-            this.layoutAlgorithmStringSerial = graphData.layout;
+            this.layoutSerial = graphData.layout;
             this.selectedGraphName = graphData.graphName;
             this.createGraph(this.graphData, '#graphComponent');
           } else {
@@ -266,9 +266,9 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
   }
 
   selectLayout(layoutValue: string) {
-    this.layoutAlgorithmStringSerial = this.layoutOptions.indexOf(layoutValue);
-    this.setLayoutAlgorithm(this.layoutAlgorithmStringSerial);
-    this.apiCallsService.setLayoutAlgorithm(this.layoutAlgorithmStringSerial, this.graphId)
+    this.layoutSerial = this.layoutOptions.indexOf(layoutValue);
+    this.applyLayout(this.layoutSerial);
+    this.apiCallsService.setLayoutAlgorithm(this.layoutSerial, this.graphId)
       .subscribe({
         next: () => { },
         error: (error) => {
@@ -277,8 +277,8 @@ export class GraphManipulationComponent implements OnInit, OnDestroy {
       });
   }
 
-  setLayoutAlgorithm(layoutAlgorithmStringSerial: number): void {
-    this.graphControl.doLayout(layoutAlgorithmStringSerial);
+  applyLayout(layoutSerial: number): void {
+    this.graphControl.doLayout(layoutSerial);
   }
 
   addNode(nodeName: string, selectedParentNodes: Ownership[] = []) {

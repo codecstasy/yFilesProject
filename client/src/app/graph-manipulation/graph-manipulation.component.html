@@ -2,7 +2,7 @@
   <div class="layout-section">
     <label>Select Layout: </label>
     <button mat-button class="layout-button" [matMenuTriggerFor]="layoutMenu">
-      {{ layoutOptions.at(layoutAlgorithmStringSerial) }} <mat-icon>arrow_drop_down</mat-icon>
+      {{ layoutOptions.at(layoutSerial) }} <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #layoutMenu="matMenu">
       <button
@@ -11,7 +11,7 @@
         (click)="selectLayout(option)"
       >
         {{ option }}
-        <mat-icon *ngIf="layoutOptions.at(layoutAlgorithmStringSerial) === option">check</mat-icon>
+        <mat-icon *ngIf="layoutOptions.at(layoutSerial) === option">check</mat-icon>
       </button>
     </mat-menu>
     <button (click)="openAddNodeDialog()">Add Node</button>
